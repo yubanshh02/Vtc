@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Vikrant Trading Company</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+
+    <div class="login-card">
+        <div class="login-header">
+            <!-- Logo space left blank -->
+            <div class="logo-placeholder" title="Logo Placeholder">LOGO</div>
+            <h2>VIKRANT TRADING CO.</h2>
+            <p>Admin ERP & Tally Billing Portal</p>
+        </div>
+
+        <form id="vtcLoginForm">
+            <div class="form-group">
+                <label for="adminId">Admin Username / ID</label>
+                <input type="text" id="adminId" class="form-control" placeholder="Enter Admin ID" autocomplete="off" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" class="form-control" placeholder="Enter Secure Password" required>
+            </div>
+
+            <div id="errorAlert" style="display: none; background: rgba(220, 38, 38, 0.2); border: 1px solid #dc2626; color: #fca5a5; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 16px; text-align: center;">
+                Invalid Username or Password! Access Denied.
+            </div>
+
+            <button type="submit" class="btn-login">SIGN IN TO GATEWAY ➔</button>
+        </form>
+
+        <div class="login-footer-hint">
+            <strong>Security Notice:</strong> All financial ledgers, inventory stock, and invoice books are strictly encrypted & restricted to authorized personnel only.
+        </div>
+        
+        <div style="text-align: center; margin-top: 18px;">
+            <a href="index.html" style="color: #64748b; font-size: 0.85rem;">← Return to Public Website</a>
+        </div>
+    </div>
+
+    <script>
+        if (sessionStorage.getItem("VTC_ADMIN_TOKEN") === "AUTHENTICATED_VTC_ADMIN_2026") {
+            window.location.href = "admin.html";
+        }
+
+        document.getElementById("vtcLoginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const idInput = document.getElementById("adminId").value.trim();
+            const passInput = document.getElementById("adminPassword").value.trim();
+            const errorAlert = document.getElementById("errorAlert");
+
+            if (idInput === "vtcbilari" && passInput === "vtc@123") {
+                sessionStorage.setItem("VTC_ADMIN_TOKEN", "AUTHENTICATED_VTC_ADMIN_2026");
+                sessionStorage.setItem("VTC_ADMIN_USER", "vtcbilari");
+                sessionStorage.setItem("VTC_LOGIN_TIME", new Date().toISOString());
+                window.location.href = "admin.html";
+            } else {
+                errorAlert.style.display = "block";
+                document.getElementById("adminPassword").value = "";
+            }
+        });
+    </script>
+</body>
+</html>

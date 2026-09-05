@@ -1,0 +1,362 @@
+:root {
+  --tally-bg: #070e17;
+  --tally-panel: #0d1a2d;
+  --tally-border: #1e3658;
+  --tally-gold: #f59e0b;
+  --tally-cyan: #38bdf8;
+  --tally-green: #10b981;
+  --tally-red: #ef4444;
+  --tally-text: #e2e8f0;
+  --tally-text-muted: #94a3b8;
+}
+
+body.tally-app {
+  background: var(--tally-bg);
+  color: var(--tally-text);
+  font-family: 'Consolas', 'Courier New', 'Segoe UI', monospace;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tally-topbar {
+  background: #091321;
+  border-bottom: 2px solid #0284c7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 18px;
+  height: 52px;
+}
+
+.tally-company-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tally-company-info .logo-placeholder {
+  width: 36px;
+  height: 36px;
+  border-color: var(--tally-cyan);
+  color: var(--tally-cyan);
+  font-size: 8px;
+}
+
+.tally-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.tally-period {
+  font-size: 0.8rem;
+  color: var(--tally-gold);
+  background: rgba(245, 158, 11, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.tally-user-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tally-btn-danger {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tally-btn-danger:hover {
+  background: #b91c1c;
+}
+
+.tally-workspace {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.tally-sidebar {
+  width: 280px;
+  background: var(--tally-panel);
+  border-right: 1px solid var(--tally-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.gateway-header {
+  background: #11253e;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--tally-cyan);
+  border-bottom: 1px solid var(--tally-border);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.gateway-menu {
+  list-style: none;
+  padding: 10px 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.gateway-menu-item {
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.gateway-menu-item:hover,
+.gateway-menu-item.active {
+  background: #152945;
+  color: #ffffff;
+  border-left-color: var(--tally-cyan);
+}
+
+.gateway-shortcut {
+  color: var(--tally-gold);
+  font-weight: bold;
+  font-size: 0.8rem;
+  background: #08121f;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid #1c324e;
+}
+
+.tally-main-view {
+  flex: 1;
+  background: var(--tally-bg);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric-box {
+  background: var(--tally-panel);
+  border: 1px solid var(--tally-border);
+  border-radius: 6px;
+  padding: 16px;
+  position: relative;
+}
+
+.metric-title {
+  font-size: 0.75rem;
+  color: var(--tally-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.metric-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.metric-trend {
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+.text-green { color: var(--tally-green); }
+.text-red { color: var(--tally-red); }
+.text-gold { color: var(--tally-gold); }
+.text-cyan { color: var(--tally-cyan); }
+
+.tally-sheet {
+  background: var(--tally-panel);
+  border: 1px solid var(--tally-border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.sheet-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--tally-border);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.sheet-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tally-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.88rem;
+}
+
+.tally-table th {
+  background: #142742;
+  color: var(--tally-cyan);
+  padding: 10px 12px;
+  text-align: left;
+  border: 1px solid var(--tally-border);
+  font-weight: 600;
+}
+
+.tally-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--tally-border);
+  color: #e2e8f0;
+}
+
+.tally-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.tally-table .text-right { text-align: right; }
+.tally-table .text-center { text-align: center; }
+
+.tally-form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.tally-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--tally-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.tally-input,
+.tally-select {
+  width: 100%;
+  background: #081321;
+  border: 1px solid var(--tally-border);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.tally-input:focus,
+.tally-select:focus {
+  border-color: var(--tally-cyan);
+  background: #0c1c31;
+}
+
+.btn-tally-action {
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.btn-tally-action:hover { background: #0369a1; }
+
+.btn-tally-secondary {
+  background: #1e3a5f;
+  color: #cbd5e1;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.tally-fkeys {
+  background: #08111d;
+  border-top: 1px solid var(--tally-border);
+  padding: 8px 16px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.fkey-btn {
+  background: #102138;
+  border: 1px solid #1c3659;
+  color: #e2e8f0;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fkey-btn span {
+  color: var(--tally-gold);
+  font-weight: bold;
+}
+
+.fkey-btn:hover {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #fff;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.invoice-paper {
+  background: #fff;
+  color: #000;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 40px;
+  border-radius: 4px;
+  font-family: 'Arial', sans-serif;
+}
+
+@media print {
+  body * { visibility: hidden; }
+  .invoice-paper, .invoice-paper * { visibility: visible; }
+  .invoice-paper { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; padding: 20px; }
+  .no-print { display: none !important; }
+}

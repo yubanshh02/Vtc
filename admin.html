@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway of Tally | Vikrant Trading Company (ERP V9.0)</title>
+    <link rel="stylesheet" href="tally.css">
+</head>
+<body class="tally-app">
+
+    <!-- TOP HEADER -->
+    <header class="tally-topbar">
+        <div class="tally-company-info">
+            <div class="logo-placeholder" title="Logo Placeholder">LOGO</div>
+            <div>
+                <span class="tally-title">VIKRANT TRADING COMPANY</span>
+                <span style="font-size:0.75rem; color:#94a3b8; margin-left: 8px;">| GSTIN: 09AABCV1234F1Z8</span>
+            </div>
+            <span class="tally-period">F.Y. 2026-2027</span>
+        </div>
+        <div class="tally-user-controls">
+            <span style="font-size: 0.85rem; color: #38bdf8;">User: <strong id="currentUser">vtcbilari</strong></span>
+            <button onclick="exportDataBackup()" class="fkey-btn" style="background:#1e3a5f;"><span>Backup</span> (JSON)</button>
+            <button onclick="logoutAdmin()" class="tally-btn-danger">Quit [Esc]</button>
+        </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <div class="tally-workspace">
+        
+        <!-- SIDEBAR -->
+        <aside class="tally-sidebar">
+            <div class="gateway-header">Gateway of Tally</div>
+            <ul class="gateway-menu">
+                <li class="gateway-menu-item active" onclick="switchView('dashboard')">
+                    <span>1. Dashboard Overview</span>
+                    <span class="gateway-shortcut">D</span>
+                </li>
+                <li class="gateway-menu-item" onclick="switchView('salesVoucher')">
+                    <span>2. Sales Voucher (F8)</span>
+                    <span class="gateway-shortcut">F8</span>
+                </li>
+                <li class="gateway-menu-item" onclick="switchView('purchaseVoucher')">
+                    <span>3. Purchase Voucher (F9)</span>
+                    <span class="gateway-shortcut">F9</span>
+                </li>
+                <li class="gateway-menu-item" onclick="switchView('paymentVoucher')">
+                    <span>4. Payment Voucher (F5)</span>
+                    <span class="gateway-shortcut">F5</span>
+                </li>
+                <li class="gateway-menu-item" onclick="switchView('receiptVoucher')">
+                    <span>5. Receipt Voucher (F6)</span>
+                    <span class="gateway-shortcut">F6</span>
+                </li>
+                <li class="gateway-menu-item" onclick="switchView('inventory')">
+                    <span>6. Stock / Inventory</span>
+                    <span class="gateway-shortcut">I</span>
+                </li>
+                <li class="gateway-menu-item" onclick="switchView('ledgers')">
+                    <span>7. Ledgers & Accounts</span>
+                    <span class="gateway-shortcut">A</span>
+                </li>
+                <li class="gateway-menu-item" onclick="switchView('daybook')">
+                    <span>8. Day Book / Register</span>
+                    <span class="gateway-shortcut">R</span>
+                </li>
+                <li class="gateway-menu-item" onclick="switchView('plStatement')">
+                    <span>9. Profit & Loss A/c</span>
+                    <span class="gateway-shortcut">P</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- MAIN VIEW PORT -->
+        <main class="tally-main-view" id="mainViewport">
+            
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view-panel">
+                <div class="metrics-row">
+                    <div class="metric-box">
+                        <div class="metric-title">Total Sales (Turnover)</div>
+                        <div class="metric-value text-cyan" id="metricSales">₹0.00</div>
+                        <div class="metric-trend text-green">↑ Tax Invoices Recorded</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">Total Purchases</div>
+                        <div class="metric-value text-gold" id="metricPurchase">₹0.00</div>
+                        <div class="metric-trend text-muted">Stock procurement</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">Cash & Bank Balance</div>
+                        <div class="metric-value text-green" id="metricCashBank">₹0.00</div>
+                        <div class="metric-trend text-green">Liquid Assets</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">Sundry Debtors (Receivable)</div>
+                        <div class="metric-value text-red" id="metricDebtors">₹0.00</div>
+                        <div class="metric-trend text-muted">Pending Customer Dues</div>
+                    </div>
+                </div>
+
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">Recent Transactions & Vouchers</div>
+                        <button onclick="switchView('salesVoucher')" class="btn-tally-action">+ New Sales Bill (F8)</button>
+                    </div>
+                    <table class="tally-table">
+                        <thead>
+                            <tr>
+                                <th>Vch No.</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Particulars / Party</th>
+                                <th class="text-right">Debit (₹)</th>
+                                <th class="text-right">Credit (₹)</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardRecentTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: SALES VOUCHER -->
+            <div id="view-salesVoucher" class="view-panel" style="display:none;">
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">Accounting Voucher Creation (Sales / Tax Invoice)</div>
+                        <span style="color:var(--tally-gold); font-size: 0.9rem;">Voucher Type: Sales (F8)</span>
+                    </div>
+
+                    <form id="salesVoucherForm">
+                        <div class="tally-form-row">
+                            <div>
+                                <label class="tally-label">Invoice / Voucher No.</label>
+                                <input type="text" id="salesVchNo" class="tally-input" readonly>
+                            </div>
+                            <div>
+                                <label class="tally-label">Date</label>
+                                <input type="date" id="salesDate" class="tally-input" required>
+                            </div>
+                            <div>
+                                <label class="tally-label">Party A/c Name (Buyer)</label>
+                                <select id="salesParty" class="tally-select" required></select>
+                            </div>
+                        </div>
+
+                        <div class="tally-form-row">
+                            <div>
+                                <label class="tally-label">Sales Ledger</label>
+                                <select id="salesLedgerSelect" class="tally-select">
+                                    <option value="Sales Account">GST Sales @ Standard</option>
+                                    <option value="Interstate Sales">Interstate Sales (IGST)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="tally-label">Place of Supply / State</label>
+                                <input type="text" id="salesPlaceSupply" class="tally-input" value="Uttar Pradesh (09)">
+                            </div>
+                            <div>
+                                <label class="tally-label">Payment Mode</label>
+                                <select id="salesPayMode" class="tally-select">
+                                    <option value="Credit">On Credit (Sundry Debtor)</option>
+                                    <option value="Cash">Cash in Hand</option>
+                                    <option value="Bank">Bank Transfer / UPI</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin: 20px 0 10px; border-top: 1px dashed var(--tally-border); padding-top: 15px;">
+                            <h4 style="color: var(--tally-cyan); margin-bottom: 12px;">Item Details / Inventory Allocations</h4>
+                            <table class="tally-table" id="salesItemEntryTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 35%;">Name of Item</th>
+                                        <th style="width: 15%;">HSN/SAC</th>
+                                        <th style="width: 12%;">Qty</th>
+                                        <th style="width: 12%;">Rate (₹)</th>
+                                        <th style="width: 10%;">GST %</th>
+                                        <th style="width: 16%;" class="text-right">Amount (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesItemsBody">
+                                    <tr>
+                                        <td>
+                                            <select class="tally-select item-select" onchange="onItemSelectRow(this)" required></select>
+                                        </td>
+                                        <td><input type="text" class="tally-input item-hsn" placeholder="HSN" readonly></td>
+                                        <td><input type="number" step="0.01" class="tally-input item-qty" value="1" min="0.01" oninput="calculateSalesTotals()" required></td>
+                                        <td><input type="number" step="0.01" class="tally-input item-rate" value="0" min="0" oninput="calculateSalesTotals()" required></td>
+                                        <td>
+                                            <select class="tally-select item-gst" onchange="calculateSalesTotals()">
+                                                <option value="18">18%</option>
+                                                <option value="12">12%</option>
+                                                <option value="28">28%</option>
+                                                <option value="5">5%</option>
+                                                <option value="0">0%</option>
+                                            </select>
+                                        </td>
+                                        <td class="text-right item-row-total" style="font-weight: bold;">₹0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="margin-top: 10px;">
+                                <button type="button" onclick="addSalesItemRow()" class="btn-tally-secondary">+ Add Item Line</button>
+                            </div>
+                        </div>
+
+                        <div style="background: #081321; border: 1px solid var(--tally-border); border-radius: 6px; padding: 16px; margin-top: 20px; display: flex; justify-content: flex-end;">
+                            <div style="width: 340px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color:#94a3b8;">Taxable Amount:</span>
+                                    <strong id="salesSubTotal">₹0.00</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color:#94a3b8;">CGST:</span>
+                                    <strong id="salesCGST">₹0.00</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color:#94a3b8;">SGST:</span>
+                                    <strong id="salesSGST">₹0.00</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--tally-border); padding-top: 8px; font-size: 1.1rem; color: var(--tally-cyan);">
+                                    <span>Grand Total:</span>
+                                    <strong id="salesGrandTotal">₹0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tally-form-row" style="margin-top: 20px;">
+                            <div style="grid-column: span 3;">
+                                <label class="tally-label">Narration / Remarks</label>
+                                <input type="text" id="salesNarration" class="tally-input" placeholder="e.g. Being goods sold against Tax Invoice">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-top: 20px;">
+                            <button type="submit" class="btn-tally-action">Accept & Print Bill (Ctrl+A)</button>
+                            <button type="button" onclick="switchView('dashboard')" class="btn-tally-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VIEW: PURCHASE VOUCHER -->
+            <div id="view-purchaseVoucher" class="view-panel" style="display:none;">
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">Accounting Voucher Creation (Purchase - F9)</div>
+                    </div>
+                    <form id="purchaseVoucherForm">
+                        <div class="tally-form-row">
+                            <div>
+                                <label class="tally-label">Supplier Invoice No.</label>
+                                <input type="text" id="purVchNo" class="tally-input" required>
+                            </div>
+                            <div>
+                                <label class="tally-label">Date</label>
+                                <input type="date" id="purDate" class="tally-input" required>
+                            </div>
+                            <div>
+                                <label class="tally-label">Supplier / Creditor A/c</label>
+                                <select id="purSupplierSelect" class="tally-select" required></select>
+                            </div>
+                        </div>
+                        <div class="tally-form-row">
+                            <div>
+                                <label class="tally-label">Item Purchased</label>
+                                <select id="purItemSelect" class="tally-select" required></select>
+                            </div>
+                            <div>
+                                <label class="tally-label">Quantity Received</label>
+                                <input type="number" id="purQty" step="0.01" class="tally-input" required>
+                            </div>
+                            <div>
+                                <label class="tally-label">Purchase Rate / Unit (₹)</label>
+                                <input type="number" id="purRate" step="0.01" class="tally-input" required>
+                            </div>
+                        </div>
+                        <div class="tally-form-row">
+                            <div style="grid-column: span 3;">
+                                <label class="tally-label">Narration</label>
+                                <input type="text" id="purNarration" class="tally-input" placeholder="Being raw material / stock purchased">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-tally-action">Save Purchase Entry (F9)</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VIEW: PAYMENT VOUCHER -->
+            <div id="view-paymentVoucher" class="view-panel" style="display:none;">
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">Payment Voucher Creation (F5)</div>
+                    </div>
+                    <form id="paymentVoucherForm">
+                        <div class="tally-form-row">
+                            <div>
+                                <label class="tally-label">Account (Paid From)</label>
+                                <select id="payFromAccount" class="tally-select">
+                                    <option value="Cash">Cash in Hand</option>
+                                    <option value="HDFC Bank">HDFC Bank A/c</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="tally-label">Date</label>
+                                <input type="date" id="payDate" class="tally-input" required>
+                            </div>
+                            <div>
+                                <label class="tally-label">Particulars (Paid To)</label>
+                                <select id="payToParty" class="tally-select" required></select>
+                            </div>
+                        </div>
+                        <div class="tally-form-row">
+                            <div>
+                                <label class="tally-label">Amount (₹)</label>
+                                <input type="number" id="payAmount" step="0.01" class="tally-input" required>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label class="tally-label">Narration</label>
+                                <input type="text" id="payNarration" class="tally-input" placeholder="Being payment released against supplier bill">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-tally-action">Save Payment (F5)</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VIEW: RECEIPT VOUCHER -->
+            <div id="view-receiptVoucher" class="view-panel" style="display:none;">
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">Receipt Voucher Creation (F6)</div>
+                    </div>
+                    <form id="receiptVoucherForm">
+                        <div class="tally-form-row">
+                            <div>
+                                <label class="tally-label">Account (Received In)</label>
+                                <select id="rcptToAccount" class="tally-select">
+                                    <option value="Cash">Cash in Hand</option>
+                                    <option value="HDFC Bank">HDFC Bank A/c</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="tally-label">Date</label>
+                                <input type="date" id="rcptDate" class="tally-input" required>
+                            </div>
+                            <div>
+                                <label class="tally-label">Particulars (Received From)</label>
+                                <select id="rcptFromParty" class="tally-select" required></select>
+                            </div>
+                        </div>
+                        <div class="tally-form-row">
+                            <div>
+                                <label class="tally-label">Amount (₹)</label>
+                                <input type="number" id="rcptAmount" step="0.01" class="tally-input" required>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label class="tally-label">Narration</label>
+                                <input type="text" id="rcptNarration" class="tally-input" placeholder="Being amount received against outstanding invoice">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-tally-action">Save Receipt (F6)</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VIEW: INVENTORY -->
+            <div id="view-inventory" class="view-panel" style="display:none;">
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">Stock Summary & Inventory Books</div>
+                        <button onclick="openNewItemModal()" class="btn-tally-action">+ Create Stock Item</button>
+                    </div>
+                    <table class="tally-table">
+                        <thead>
+                            <tr>
+                                <th>Item Code</th>
+                                <th>Item Description</th>
+                                <th>Category / Group</th>
+                                <th>HSN</th>
+                                <th class="text-right">Available Qty</th>
+                                <th class="text-right">Standard Rate (₹)</th>
+                                <th class="text-right">Stock Value (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryStockTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: LEDGERS -->
+            <div id="view-ledgers" class="view-panel" style="display:none;">
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">List of Ledgers / Master Accounts</div>
+                        <button onclick="openNewLedgerModal()" class="btn-tally-action">+ Create Ledger</button>
+                    </div>
+                    <table class="tally-table">
+                        <thead>
+                            <tr>
+                                <th>Ledger Name</th>
+                                <th>Under Group</th>
+                                <th>Contact / City</th>
+                                <th>GSTIN</th>
+                                <th class="text-right">Closing Balance (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledgerAccountsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: DAY BOOK -->
+            <div id="view-daybook" class="view-panel" style="display:none;">
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">Day Book (Transaction Register)</div>
+                    </div>
+                    <table class="tally-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Voucher No</th>
+                                <th>Type</th>
+                                <th>Particulars</th>
+                                <th class="text-right">Debit (₹)</th>
+                                <th class="text-right">Credit (₹)</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daybookFullTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: PROFIT & LOSS -->
+            <div id="view-plStatement" class="view-panel" style="display:none;">
+                <div class="tally-sheet">
+                    <div class="sheet-title-bar">
+                        <div class="sheet-title">Profit & Loss Statement for FY 2026-27</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <h4 style="color:var(--tally-cyan); margin-bottom: 8px;">Trading Account (Expenses)</h4>
+                            <table class="tally-table">
+                                <tr><td>To Opening Stock</td><td class="text-right" id="plOpStock">₹0.00</td></tr>
+                                <tr><td>To Purchases (Gross)</td><td class="text-right" id="plPurchases">₹0.00</td></tr>
+                                <tr><td>To Direct Expenses</td><td class="text-right">₹0.00</td></tr>
+                                <tr style="background:#11233d; font-weight:bold;">
+                                    <td>Gross Profit c/o</td><td class="text-right text-green" id="plGrossProfit">₹0.00</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <h4 style="color:var(--tally-cyan); margin-bottom: 8px;">Trading Account (Incomes)</h4>
+                            <table class="tally-table">
+                                <tr><td>By Sales Accounts (Revenue)</td><td class="text-right" id="plSales">₹0.00</td></tr>
+                                <tr><td>By Closing Stock Value</td><td class="text-right" id="plClosingStock">₹0.00</td></tr>
+                                <tr style="background:#11233d; font-weight:bold;">
+                                    <td>Total Incomes</td><td class="text-right" id="plTotalIncomes">₹0.00</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- TALLY FUNCTION KEYS FOOTER -->
+    <div class="tally-fkeys">
+        <button class="fkey-btn" onclick="switchView('dashboard')"><span>Esc</span> Gateway</button>
+        <button class="fkey-btn" onclick="switchView('paymentVoucher')"><span>F5</span> Payment</button>
+        <button class="fkey-btn" onclick="switchView('receiptVoucher')"><span>F6</span> Receipt</button>
+        <button class="fkey-btn" onclick="switchView('salesVoucher')"><span>F8</span> Sales (Invoice)</button>
+        <button class="fkey-btn" onclick="switchView('purchaseVoucher')"><span>F9</span> Purchase</button>
+        <button class="fkey-btn" onclick="switchView('inventory')"><span>I</span> Inventory</button>
+        <button class="fkey-btn" onclick="switchView('ledgers')"><span>A</span> Ledgers</button>
+        <button class="fkey-btn" onclick="switchView('daybook')"><span>R</span> Day Book</button>
+        <button class="fkey-btn" onclick="switchView('plStatement')"><span>P</span> P&L A/c</button>
+    </div>
+
+    <!-- INVOICE PRINT MODAL -->
+    <div class="modal-overlay" id="invoiceModal">
+        <div class="invoice-paper" id="printableInvoiceContent"></div>
+    </div>
+
+    <script src="tally.js"></script>
+</body>
+</html>
